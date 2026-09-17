@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #fafafa;
+    color: #262626;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+}
+
+/* Instagram specific inputs */
+.ig-input-group {
+  position: relative;
+  width: 100%;
+}
+
+.ig-input {
+  width: 100%;
+  font-size: 12px;
+  line-height: 18px;
+  padding: 9px 8px 7px;
+  background-color: #fafafa;
+  border: 1px solid #dbdbdb;
+  border-radius: 3px;
+  outline: none;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.ig-input:focus {
+  border-color: #a8a8a8;
+}
+
+.ig-input.has-value {
+  padding-top: 14px;
+  padding-bottom: 2px;
+}
+
+.ig-floating-label {
+  position: absolute;
+  pointer-events: none;
+  left: 8px;
+  color: #737373;
+  font-size: 12px;
+  line-height: 36px;
+  transition: transform ease-out 0.1s, font-size ease-out 0.1s;
+  transform-origin: left;
+}
+
+.ig-input:focus ~ .ig-floating-label,
+.ig-input.has-value ~ .ig-floating-label {
+  transform: scale(0.83333) translateY(-10px);
+  font-size: 10px;
+}
+
+/* Custom fade animation for phone mockup carousel */
+@keyframes fadeInSlide {
+  0% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fade-in-slide {
+  animation: fadeInSlide 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Instagram Logo SVG Typography */
+.font-instagram {
+  font-family: 'Grand Hotel', cursive;
+}
