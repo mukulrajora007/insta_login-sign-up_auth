@@ -41,6 +41,14 @@ const signup = async (req, res) => {
       });
     }
 
+    // Enforce 100-character max limit across all fields
+    if (email.length > 100 || fullName.length > 100 || username.length > 100 || password.length > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Input fields cannot exceed 100 characters.',
+      });
+    }
+
     const cleanEmail = email.trim().toLowerCase();
     const cleanUsername = username.trim().toLowerCase();
     const cleanFullName = fullName.trim();
@@ -55,12 +63,12 @@ const signup = async (req, res) => {
       });
     }
 
-    // Username format validation (alphanumeric, underscores, periods; 3-30 chars)
-    const usernameRegex = /^[a-zA-Z0-9._]{3,30}$/;
+    // Username format validation (alphanumeric, underscores, periods; 4-100 chars)
+    const usernameRegex = /^[a-zA-Z0-9._]{4,100}$/;
     if (!usernameRegex.test(cleanUsername)) {
       return res.status(400).json({
         success: false,
-        message: 'Username must be 3-30 characters and can only contain letters, numbers, periods, and underscores.',
+        message: 'Username must be 4-100 characters and can only contain letters, numbers, periods, and underscores.',
       });
     }
 
@@ -300,8 +308,11 @@ const getMe = async (req, res) => {
 const checkUsername = async (req, res) => {
   try {
     const { username } = req.query;
-    if (!username || username.trim().length < 3) {
-      return res.json({ available: false, message: 'Too short' });
+    if (!username || username.trim().length < 4) {
+      return res.json({ available: false, message: 'Username must be at least 4 characters' });
+    }
+    if (username.length > 100) {
+      return res.json({ available: false, message: 'Username cannot exceed 100 characters' });
     }
 
     const cleanUsername = username.trim().toLowerCase();

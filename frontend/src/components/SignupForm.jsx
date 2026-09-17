@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/api';
@@ -17,13 +17,18 @@ export default function SignupForm() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const emailRef = useRef(null);
+  const fullNameRef = useRef(null);
+  const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
+
   const { signup } = useAuth();
   const navigate = useNavigate();
 
-  // Debounced username availability checker
+  // Debounced username availability checker (Min 4 chars)
   useEffect(() => {
     const cleanUsername = formData.username.trim();
-    if (cleanUsername.length < 3) {
+    if (cleanUsername.length < 4) {
       setUsernameStatus(null);
       return;
     }
@@ -43,6 +48,7 @@ export default function SignupForm() {
 
   const handleChange = (e) => {
     let { name, value } = e.target;
+    value = value.slice(0, 100);
     if (name === 'username') {
       value = value.replace(/\s+/g, '_').toLowerCase();
     }
@@ -56,7 +62,7 @@ export default function SignupForm() {
   const isFormValid =
     formData.email.trim().length > 3 &&
     formData.fullName.trim().length >= 2 &&
-    formData.username.trim().length >= 3 &&
+    formData.username.trim().length >= 4 &&
     formData.password.length >= 6 &&
     usernameStatus !== 'taken';
 
@@ -129,13 +135,21 @@ export default function SignupForm() {
           {/* Email / Mobile */}
           <div className="ig-input-group">
             <input
+              ref={emailRef}
               id="email"
               type="text"
               name="email"
               autoComplete="email"
               required
+              maxLength={100}
               value={formData.email}
               onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  fullNameRef.current?.focus();
+                }
+              }}
               className={`ig-input ${formData.email ? 'has-value' : ''}`}
             />
             <label htmlFor="email" className="ig-floating-label">
@@ -146,13 +160,25 @@ export default function SignupForm() {
           {/* Full Name */}
           <div className="ig-input-group">
             <input
+              ref={fullNameRef}
               id="fullName"
               type="text"
               name="fullName"
               autoComplete="name"
               required
+              maxLength={100}
               value={formData.fullName}
               onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (e.shiftKey) {
+                    emailRef.current?.focus();
+                  } else {
+                    usernameRef.current?.focus();
+                  }
+                }
+              }}
               className={`ig-input ${formData.fullName ? 'has-value' : ''}`}
             />
             <label htmlFor="fullName" className="ig-floating-label">
@@ -163,17 +189,29 @@ export default function SignupForm() {
           {/* Username */}
           <div className="ig-input-group relative">
             <input
+              ref={usernameRef}
               id="username"
               type="text"
               name="username"
               autoComplete="username"
               required
+              maxLength={100}
               value={formData.username}
               onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (e.shiftKey) {
+                    fullNameRef.current?.focus();
+                  } else {
+                    passwordRef.current?.focus();
+                  }
+                }
+              }}
               className={`ig-input ${formData.username ? 'has-value' : ''} pr-8`}
             />
             <label htmlFor="username" className="ig-floating-label">
-              Username
+              Username (min 4 chars)
             </label>
 
             {/* Availability Indicator */}
@@ -199,13 +237,21 @@ export default function SignupForm() {
           {/* Password */}
           <div className="ig-input-group relative">
             <input
+              ref={passwordRef}
               id="signup-password"
               type={showPassword ? 'text' : 'password'}
               name="password"
               autoComplete="new-password"
               required
+              maxLength={100}
               value={formData.password}
               onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.shiftKey) {
+                  e.preventDefault();
+                  usernameRef.current?.focus();
+                }
+              }}
               className={`ig-input ${formData.password ? 'has-value' : ''} pr-12`}
             />
             <label htmlFor="signup-password" className="ig-floating-label">

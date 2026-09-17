@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AlertCircle, Loader2 } from 'lucide-react';
@@ -10,10 +10,13 @@ export default function LoginForm() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const identifierRef = useRef(null);
+  const passwordRef = useRef(null);
+
   const { login, demoAccount, supabaseConnected } = useAuth();
   const navigate = useNavigate();
 
-  const isFormFilled = identifier.trim().length > 0 && password.length >= 6;
+  const isFormFilled = identifier.trim().length >= 4 && password.length >= 6;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,13 +73,21 @@ export default function LoginForm() {
           {/* Identifier Input */}
           <div className="ig-input-group">
             <input
+              ref={identifierRef}
               id="identifier"
               type="text"
               name="identifier"
               autoComplete="username"
               required
+              maxLength={100}
               value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              onChange={(e) => setIdentifier(e.target.value.slice(0, 100))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  passwordRef.current?.focus();
+                }
+              }}
               className={`ig-input ${identifier ? 'has-value' : ''}`}
             />
             <label htmlFor="identifier" className="ig-floating-label">
@@ -87,13 +98,21 @@ export default function LoginForm() {
           {/* Password Input with Show/Hide button */}
           <div className="ig-input-group relative">
             <input
+              ref={passwordRef}
               id="password"
               type={showPassword ? 'text' : 'password'}
               name="password"
               autoComplete="current-password"
               required
+              maxLength={100}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value.slice(0, 100))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.shiftKey) {
+                  e.preventDefault();
+                  identifierRef.current?.focus();
+                }
+              }}
               className={`ig-input ${password ? 'has-value' : ''} pr-12`}
             />
             <label htmlFor="password" className="ig-floating-label">
