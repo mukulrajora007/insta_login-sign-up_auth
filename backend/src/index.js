@@ -54,8 +54,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`\n🚀 Instagram Auth Server running on http://localhost:${PORT}`);
-  console.log(`📡 Healthcheck available at: http://localhost:${PORT}/api/health`);
-  console.log(`🔐 Supabase Database Status: ${isConfigured ? '🟢 Connected' : '🟡 Dev Fallback Mode'}\n`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 Instagram Auth Server running on http://localhost:${PORT}`);
+    console.log(`📡 Healthcheck available at: http://localhost:${PORT}/api/health`);
+    console.log(`🔐 Supabase Database Status: ${isConfigured ? '🟢 Connected' : '🟡 Dev Fallback Mode'}\n`);
+  });
+}
+
+// Export for Vercel / serverless deployment
+module.exports = app;
